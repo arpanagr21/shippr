@@ -222,7 +222,7 @@ The startup script runs `prisma db push` on every container start, so database s
 If you want to build your own image (e.g. for a custom fork):
 
 ```bash
-git clone https://github.com/your-org/shippr.git
+git clone https://github.com/arpanagr21/shippr.git
 cd shippr
 
 # Single-platform (your current machine's arch)

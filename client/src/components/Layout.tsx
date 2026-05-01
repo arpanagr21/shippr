@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Zap, LayoutDashboard, ChevronRight, Users, LogOut } from 'lucide-react';
+import { LayoutDashboard, ChevronRight, Users, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -56,9 +56,7 @@ export default function Layout({ children, crumbs, navRight, fullHeight }: Props
       <aside className="w-56 shrink-0 flex flex-col border-r border-border bg-card/40">
         {/* Brand */}
         <div className="h-14 flex items-center gap-3 px-4 border-b border-border shrink-0">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 shrink-0">
-            <Zap className="h-4 w-4 text-primary" />
-          </div>
+          <img src="/logo.svg" alt="Shippr" className="h-8 w-8 shrink-0" />
           <div className="min-w-0">
             <p className="font-semibold text-sm leading-tight truncate">Shippr</p>
             <p className="text-[10px] text-muted-foreground/70 leading-tight">Coolify</p>

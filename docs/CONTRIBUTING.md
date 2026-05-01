@@ -11,7 +11,7 @@ Read [ARCHITECTURE.md](ARCHITECTURE.md) first — it explains how the pieces fit
 Requirements: Docker, Docker Compose. No local Node.js needed.
 
 ```bash
-git clone https://github.com/your-org/shippr.git
+git clone https://github.com/arpanagr21/shippr.git
 cd shippr
 cp .env.example .env
 # fill in .env (Coolify URL/token + Firebase creds)

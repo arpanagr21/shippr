@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Zap } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 
@@ -29,9 +28,7 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-sm space-y-6 rounded-xl border border-border bg-card p-8 shadow-sm">
         <div className="flex flex-col items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 border border-primary/20">
-            <Zap className="h-6 w-6 text-primary" />
-          </div>
+          <img src="/logo.svg" alt="Shippr" className="h-14 w-14" />
           <div className="text-center">
             <h1 className="text-xl font-semibold">Shippr</h1>
             <p className="text-sm text-muted-foreground mt-1">

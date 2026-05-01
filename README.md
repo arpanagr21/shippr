@@ -1,5 +1,7 @@
 # Shippr
 
+![Shippr banner](docs/assets/banner.png)
+
 **Shippr is a self-hosted web dashboard built specifically for [Coolify](https://coolify.io).** It gives your team a clean, access-controlled interface to watch deployment logs in real time, trigger deploys, and browse deployment history — without handing everyone your Coolify credentials or root access.
 
 > Built for teams running Coolify who need fine-grained visibility and per-user access control on top of it.

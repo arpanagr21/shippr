@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Zap } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 interface Crumb {
@@ -22,9 +21,7 @@ export default function Navbar({ crumbs, right }: Props) {
       <div className="h-full px-6 flex items-center gap-3">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 shrink-0">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 border border-primary/20">
-            <Zap className="h-3.5 w-3.5 text-primary" />
-          </div>
+          <img src="/logo.svg" alt="Shippr" className="h-7 w-7" />
           <span className="font-semibold text-sm">Shippr</span>
         </Link>
 

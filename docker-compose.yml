@@ -29,6 +29,7 @@ services:
       - "24678:24678" # Vite HMR WebSocket
     volumes:
       - ./client/src:/app/src
+      - ./client/public:/app/public
       - ./client/index.html:/app/index.html
       - ./client/vite.config.ts:/app/vite.config.ts
       - ./client/tailwind.config.js:/app/tailwind.config.js
