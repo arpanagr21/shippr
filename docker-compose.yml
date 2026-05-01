@@ -1,0 +1,55 @@
+services:
+  server:
+    build:
+      context: ./server
+    ports:
+      - "3069:3069"
+    volumes:
+      - ./server/src:/app/src
+      - ./server/prisma:/app/prisma
+      - ./server/nodemon.json:/app/nodemon.json
+      - ./.env:/app/.env:ro
+      - server_modules:/app/node_modules
+      - ./server/data:/app/data
+    environment:
+      - NODE_ENV=development
+      - PORT=3069
+      - DB_PROVIDER=${DB_PROVIDER:-sqlite}
+      - DATABASE_URL=file:./data/shippr.db
+      - CORS_ORIGINS=http://localhost:5173
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=300
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./client
+    ports:
+      - "5173:5173"   # Vite dev server
+      - "24678:24678" # Vite HMR WebSocket
+    volumes:
+      - ./client/src:/app/src
+      - ./client/index.html:/app/index.html
+      - ./client/vite.config.ts:/app/vite.config.ts
+      - ./client/tailwind.config.js:/app/tailwind.config.js
+      - ./client/postcss.config.js:/app/postcss.config.js
+      - ./client/tsconfig.json:/app/tsconfig.json
+      - client_modules:/app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:3069
+      - VITE_FIREBASE_API_KEY=${FIREBASE_API_KEY}
+      - VITE_FIREBASE_AUTH_DOMAIN=${FIREBASE_AUTH_DOMAIN}
+      - VITE_FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - VITE_FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET}
+      - VITE_FIREBASE_MESSAGING_SENDER_ID=${FIREBASE_MESSAGING_SENDER_ID}
+      - VITE_FIREBASE_APP_ID=${FIREBASE_APP_ID}
+      - VITE_GOOGLE_HD=${GOOGLE_HD:-}
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=300
+    depends_on:
+      - server
+    restart: unless-stopped
+
+volumes:
+  server_modules:
+  client_modules:

@@ -1,0 +1,12 @@
+.git
+.env
+*.md
+AUTHENTIK_PLAN.md
+
+# Dev build artefacts
+server/dist
+server/data
+server/cache
+server/node_modules
+client/dist
+client/node_modules

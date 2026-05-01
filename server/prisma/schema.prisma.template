@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // This file is a template — do not edit schema.prisma directly.
+  // Set DB_PROVIDER in .env (sqlite | mysql | postgresql) and DATABASE_URL to match.
+  // The startup script substitutes __DB_PROVIDER__ and regenerates the Prisma client.
+  provider = "__DB_PROVIDER__"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int           @id @default(autoincrement())
+  firebaseUid String        @unique @map("firebase_uid")
+  email       String
+  name        String?
+  photoUrl    String?       @map("photo_url")
+  role        String        @default("user")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  projects    UserProject[]
+
+  @@map("users")
+}
+
+model UserProject {
+  userId      Int    @map("user_id")
+  projectUuid String @map("project_uuid")
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, projectUuid])
+  @@map("user_projects")
+}
+
+model RegistryProject {
+  id          Int     @id @default(autoincrement())
+  uuid        String  @unique
+  name        String
+  description String?
+  deletedAt   String? @map("deleted_at")
+  syncedAt    String  @map("synced_at")
+
+  @@map("registry_projects")
+}
+
+model RegistryEnvironment {
+  id          Int     @id @default(autoincrement())
+  uuid        String  @unique
+  name        String
+  projectUuid String  @map("project_uuid")
+  deletedAt   String? @map("deleted_at")
+  syncedAt    String  @map("synced_at")
+
+  @@map("registry_environments")
+}
+
+model RegistryApplication {
+  id                        Int     @id @default(autoincrement())
+  uuid                      String  @unique
+  name                      String
+  status                    String
+  fqdn                      String?
+  buildPack                 String? @map("build_pack")
+  dockerComposeRaw          String? @map("docker_compose_raw")
+  dockerCompose             String? @map("docker_compose")
+  environmentUuid           String? @map("environment_uuid")
+  environmentName           String? @map("environment_name")
+  latestDeploymentUuid      String? @map("latest_deployment_uuid")
+  latestDeploymentStatus    String? @map("latest_deployment_status")
+  latestDeploymentUpdatedAt String? @map("latest_deployment_updated_at")
+  deletedAt                 String? @map("deleted_at")
+  syncedAt                  String  @map("synced_at")
+  coolifyCreatedAt          String? @map("coolify_created_at")
+  coolifyUpdatedAt          String? @map("coolify_updated_at")
+
+  @@map("registry_applications")
+}
+
+model RegistryService {
+  id               Int     @id @default(autoincrement())
+  uuid             String  @unique
+  name             String
+  status           String
+  dockerComposeRaw String? @map("docker_compose_raw")
+  environmentUuid  String? @map("environment_uuid")
+  environmentName  String? @map("environment_name")
+  deletedAt        String? @map("deleted_at")
+  syncedAt         String  @map("synced_at")
+  coolifyCreatedAt String? @map("coolify_created_at")
+  coolifyUpdatedAt String? @map("coolify_updated_at")
+
+  @@map("registry_services")
+}
+
+model DeploymentCache {
+  id             Int     @id @default(autoincrement())
+  appUuid        String  @map("app_uuid")
+  deploymentUuid String  @unique @map("deployment_uuid")
+  status         String
+  commit         String?
+  commitMessage  String? @map("commit_message")
+  createdAt      String  @map("created_at")
+  startedAt      String  @map("started_at")
+  updatedAt      String  @map("updated_at")
+  finishedAt     String? @map("finished_at")
+  cachedAt       String  @map("cached_at")
+
+  @@index([appUuid])
+  @@map("deployment_cache")
+}
