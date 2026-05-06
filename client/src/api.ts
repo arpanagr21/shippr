@@ -12,7 +12,11 @@ function authHeaders(): Record<string, string> {
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE}${path}`, { headers: authHeaders() });
   if (res.status === 401) throw new Error('UNAUTHORIZED');
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({})) as { error?: string; reason?: string };
+    const detail = body.reason ?? body.error ?? `${res.status} ${res.statusText}`;
+    throw new Error(detail);
+  }
   return res.json() as Promise<T>;
 }
 
@@ -52,20 +56,16 @@ export const getApps = (refresh = false) =>
   get<AppsResponse>(`/api/apps${refresh ? '?refresh=true' : ''}`);
 
 export interface DeploymentsPage {
-  data:       Deployment[];
-  total:      number;
-  page:       number;
-  limit:      number;
-  totalPages: number;
-  cachedAt?:  number;
+  data:      Deployment[];
+  hasMore:   boolean;
+  cachedAt?: number;
+  warning?:  string;
 }
-export const getAppDeployments = (uuid: string, page = 1, limit = 10, refresh = false) =>
+export const getAppDeployments = (uuid: string, skip = 0, take = 20, refresh = false) =>
   get<DeploymentsPage>(
-    `/api/apps/${uuid}/deployments?page=${page}&limit=${limit}${refresh ? '&refresh=true' : ''}`,
+    `/api/apps/${uuid}/deployments?skip=${skip}&take=${take}${refresh ? '&refresh=true' : ''}`,
   );
 
-export const getDeployment = (uuid: string, appUuid: string) =>
-  get<Deployment>(`/api/deployments/${uuid}?app_uuid=${encodeURIComponent(appUuid)}`);
 export const triggerAppDeploy     = (uuid: string) => post<{ deploymentUuid: string }>(`/api/apps/${uuid}/deploy`);
 export const triggerServiceDeploy = (uuid: string) => post<void>(`/api/services/${uuid}/deploy`);
 
@@ -105,10 +105,13 @@ export interface LogLine {
 }
 
 export interface LogPollResponse {
-  lines:  LogLine[];
-  status: string;
-  done:   boolean;
-  total:  number;
+  lines:       LogLine[];
+  status:      string;
+  done:        boolean;
+  total:       number;
+  started_at:  string | null;
+  finished_at: string | null;
+  created_at:  string;
 }
 
 export function pollLogs(

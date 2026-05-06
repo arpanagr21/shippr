@@ -133,12 +133,13 @@ export class V1Adapter implements CoolifyAdapter {
     this.base = `${config.coolifyUrl}/api/${config.coolifyApiVersion}`;
   }
 
-  private async request<T>(path: string, options?: RequestInit): Promise<T> {
+  private async request<T>(path: string, options?: RequestInit & { timeoutMs?: number }): Promise<T> {
+    const { timeoutMs = 10_000, ...fetchOptions } = options ?? {};
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 10_000);
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
       const res = await fetch(`${this.base}${path}`, {
-        ...options,
+        ...fetchOptions,
         headers: {
           Authorization:  `Bearer ${config.coolifyToken}`,
           'Content-Type': 'application/json',
@@ -204,26 +205,33 @@ export class V1Adapter implements CoolifyAdapter {
     }));
   }
 
-  async getApplicationDeployments(appUuid: string): Promise<NormalizedDeployment[]> {
-    const BATCH = 10;
-    const first = await this.request<V1DeploymentsResponse>(
-      `/deployments/applications/${appUuid}?skip=0&take=${BATCH}`,
-    );
-    const all   = [...(first.deployments ?? [])];
-    const total = first.count ?? all.length;
+  async getApplicationDeployments(appUuid: string, skip = 0, take = 20): Promise<{ deployments: NormalizedDeployment[]; hasMore: boolean }> {
+    const TIMEOUT_MS = 30_000;
+    const RETRIES    = 2;
 
-    let skip = all.length;
-    while (skip < total) {
-      const page = await this.request<V1DeploymentsResponse>(
-        `/deployments/applications/${appUuid}?skip=${skip}&take=${BATCH}`,
-      );
-      const batch = page.deployments ?? [];
-      if (batch.length === 0) break;
-      all.push(...batch);
-      skip += batch.length;
+    const unwrap = (raw: V1DeploymentsResponse | V1Deployment[]) =>
+      Array.isArray(raw)
+        ? { deployments: raw, count: raw.length }
+        : { deployments: raw.deployments ?? [], count: raw.count ?? (raw.deployments?.length ?? 0) };
+
+    let lastError: unknown;
+    for (let attempt = 0; attempt <= RETRIES; attempt++) {
+      try {
+        const raw = await this.request<V1DeploymentsResponse | V1Deployment[]>(
+          `/deployments/applications/${appUuid}?skip=${skip}&take=${take}`,
+          { timeoutMs: TIMEOUT_MS },
+        );
+        const { deployments, count } = unwrap(raw);
+        return {
+          deployments: deployments.map((d) => normalizeDeployment(d, false)),
+          hasMore:     count > skip + deployments.length,
+        };
+      } catch (err) {
+        lastError = err;
+        if (attempt < RETRIES) await new Promise((r) => setTimeout(r, 500 * (attempt + 1)));
+      }
     }
-
-    return all.map((d) => normalizeDeployment(d, false));
+    throw lastError;
   }
 
   async getDeploymentWithLogs(appUuid: string, deploymentUuid: string): Promise<NormalizedDeployment> {

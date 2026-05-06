@@ -88,13 +88,20 @@ function classifyLine(line: string, type?: 'stdout' | 'stderr'): LineClass {
   return { text: 'text-slate-300' };
 }
 
+interface DeploymentMeta {
+  started_at:  string | null;
+  finished_at: string | null;
+  created_at:  string;
+}
+
 interface Props {
   deploymentUuid: string;
   appUuid: string;
   onDone?: () => void;
+  onMeta?: (meta: DeploymentMeta) => void;
 }
 
-export default function LogViewer({ deploymentUuid, appUuid, onDone }: Props) {
+export default function LogViewer({ deploymentUuid, appUuid, onDone, onMeta }: Props) {
   const [lines, setLines]       = useState<LogLine[]>([]);
   const [status, setStatus]     = useState('queued');
   const [done, setDone]         = useState(false);
@@ -113,7 +120,10 @@ export default function LogViewer({ deploymentUuid, appUuid, onDone }: Props) {
   const cancelledRef   = useRef(false);
   const autoScrollRef  = useRef(true);
   const onDoneRef      = useRef(onDone);
+  const onMetaRef      = useRef(onMeta);
+  const metaFiredRef   = useRef(false);
   useEffect(() => { onDoneRef.current = onDone; }, [onDone]);
+  useEffect(() => { onMetaRef.current = onMeta; }, [onMeta]);
 
   const drain = useCallback(() => {
     if (cancelledRef.current || pendingRef.current.length === 0) {
@@ -141,6 +151,15 @@ export default function LogViewer({ deploymentUuid, appUuid, onDone }: Props) {
     try {
       const result = await pollLogs(deploymentUuid, appUuid, totalRef.current);
       if (cancelledRef.current) return;
+
+      if (!metaFiredRef.current) {
+        metaFiredRef.current = true;
+        onMetaRef.current?.({
+          started_at:  result.started_at,
+          finished_at: result.finished_at,
+          created_at:  result.created_at,
+        });
+      }
 
       if (result.lines.length > 0) {
         enqueue(result.lines);
@@ -177,9 +196,10 @@ export default function LogViewer({ deploymentUuid, appUuid, onDone }: Props) {
     setAutoScroll(true);
     setNewCount(0);
     autoScrollRef.current = true;
-    totalRef.current     = 0;
-    pendingRef.current   = [];
-    cancelledRef.current = false;
+    totalRef.current      = 0;
+    pendingRef.current    = [];
+    cancelledRef.current  = false;
+    metaFiredRef.current  = false;
 
     // Fetch immediately, then poll
     void poll();

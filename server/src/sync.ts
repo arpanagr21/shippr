@@ -68,11 +68,11 @@ export async function syncRegistry(): Promise<void> {
 
         if (app.isDockerCompose) {
           try {
-            const deps = await coolify.getApplicationDeployments(app.uuid);
-            if (deps[0]) {
-              latestDeploymentUuid      = deps[0].uuid;
-              latestDeploymentStatus    = deps[0].status;
-              latestDeploymentUpdatedAt = deps[0].updatedAt;
+            const { deployments } = await coolify.getApplicationDeployments(app.uuid);
+            if (deployments[0]) {
+              latestDeploymentUuid      = deployments[0].uuid;
+              latestDeploymentStatus    = deployments[0].status;
+              latestDeploymentUpdatedAt = deployments[0].updatedAt;
             }
           } catch { /* ignore per-app failures */ }
         }

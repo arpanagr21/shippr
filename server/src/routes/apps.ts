@@ -11,8 +11,21 @@ import {
 import { getCachedDeployments, setCachedDeployments } from '../models/deployments';
 import type { AuthRequest } from '../middleware/auth';
 import type { RegistryApp, RegistryService } from '../models/registry';
+import type { NormalizedDeployment } from '../coolify/adapter';
 
 const router = Router();
+
+function toDTO(d: NormalizedDeployment) {
+  return {
+    uuid:          d.uuid,
+    status:        d.status,
+    commit:        d.commit        ?? null,
+    commitMessage: d.commitMessage ?? null,
+    created_at:    d.createdAt,
+    started_at:    d.startedAt,
+    finished_at:   d.finishedAt   ?? null,
+  };
+}
 
 interface AppDTO {
   uuid:             string;
@@ -95,33 +108,45 @@ router.get('/:uuid/deployments', async (req: AuthRequest, res: Response) => {
     return res.status(403).json({ error: 'Access denied' });
   }
 
-  const bust  = req.query.refresh === 'true';
-  const page  = Math.max(1, parseInt(req.query.page  as string) || 1);
-  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 10));
+  const bust = req.query.refresh === 'true';
+  const skip = Math.max(0, parseInt(req.query.skip as string) || 0);
+  const take = Math.min(50, Math.max(1, parseInt(req.query.take as string) || 20));
+
+  // Load More (skip > 0): always hit Coolify directly, no cache
+  if (skip > 0) {
+    try {
+      const { deployments, hasMore } = await coolify.getApplicationDeployments(req.params.uuid, skip, take);
+      return res.json({ data: deployments.map(toDTO), hasMore });
+    } catch (err) {
+      const reason = err instanceof Error ? err.message : String(err);
+      console.error(`[deployments] load-more failed for app ${req.params.uuid} skip=${skip}: ${reason}`);
+      return res.status(502).json({ error: 'Failed to load more deployments', reason });
+    }
+  }
+
+  // First page: use DB cache
+  const stale = await getCachedDeployments(req.params.uuid);
 
   try {
-    let cached = bust ? null : await getCachedDeployments(req.params.uuid);
-
-    if (!cached) {
-      const all = await coolify.getApplicationDeployments(req.params.uuid);
-      await setCachedDeployments(req.params.uuid, all);
-      cached = await getCachedDeployments(req.params.uuid) ?? { data: [], cachedAt: Date.now() };
+    if (bust || !stale) {
+      const { deployments, hasMore } = await coolify.getApplicationDeployments(req.params.uuid, 0, take);
+      await setCachedDeployments(req.params.uuid, deployments);
+      const fresh = await getCachedDeployments(req.params.uuid);
+      return res.json({ data: fresh?.data ?? [], hasMore, cachedAt: fresh?.cachedAt ?? Date.now() });
     }
-
-    const { data: deployments, cachedAt } = cached;
-    const total = deployments.length;
-    const start = (page - 1) * limit;
-
-    res.json({
-      data:       deployments.slice(start, start + limit),
-      total,
-      page,
-      limit,
-      totalPages: Math.max(1, Math.ceil(total / limit)),
-      cachedAt,
-    });
+    return res.json({ data: stale.data, hasMore: stale.data.length >= take, cachedAt: stale.cachedAt });
   } catch (err) {
-    res.json({ data: [], total: 0, page: 1, limit: 20, totalPages: 1, error: 'Failed to fetch deployments' });
+    const reason = err instanceof Error ? err.message : String(err);
+    console.error(`[deployments] fetch failed for app ${req.params.uuid}: ${reason}`);
+    if (stale) {
+      return res.json({
+        data:     stale.data,
+        hasMore:  stale.data.length >= take,
+        cachedAt: stale.cachedAt,
+        warning:  `Showing cached data — live fetch failed: ${reason}`,
+      });
+    }
+    return res.status(502).json({ error: 'Failed to fetch deployments', reason });
   }
 });
 

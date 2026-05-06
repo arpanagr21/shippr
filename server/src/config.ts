@@ -4,9 +4,9 @@ import path from 'path';
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 export const config = {
-  coolifyUrl:           (process.env.COOLIFY_URL ?? '').replace(/\/$/, ''),
-  coolifyToken:         process.env.COOLIFY_TOKEN ?? '',
-  coolifyApiVersion:    (process.env.COOLIFY_API_VERSION ?? 'v1').replace(/^\/|\/$/g, ''),
+  coolifyUrl:           (process.env.SHIPPR_COOLIFY_URL ?? '').replace(/\/$/, ''),
+  coolifyToken:         (process.env.SHIPPR_COOLIFY_TOKEN ?? '').trim(),
+  coolifyApiVersion:    (process.env.SHIPPR_COOLIFY_API_VERSION ?? 'v1').replace(/^\/|\/$/g, ''),
   port:                 parseInt(process.env.PORT ?? '3001', 10),
   // Firebase Admin SDK (server-side)
   firebaseProjectId:    process.env.FIREBASE_PROJECT_ID ?? '',
@@ -25,8 +25,8 @@ export const config = {
 };
 
 const missing: string[] = [];
-if (!config.coolifyUrl)          missing.push('COOLIFY_URL');
-if (!config.coolifyToken)        missing.push('COOLIFY_TOKEN');
+if (!config.coolifyUrl)          missing.push('SHIPPR_COOLIFY_URL');
+if (!config.coolifyToken)        missing.push('SHIPPR_COOLIFY_TOKEN');
 if (!config.firebaseProjectId)   missing.push('FIREBASE_PROJECT_ID');
 if (!config.firebaseClientEmail) missing.push('FIREBASE_CLIENT_EMAIL');
 if (!config.firebasePrivateKey)  missing.push('FIREBASE_PRIVATE_KEY');

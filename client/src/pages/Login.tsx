@@ -52,7 +52,7 @@ export default function Login() {
 
         <p className="text-center text-[11px] text-muted-foreground/40">
           crafted with care by{' '}
-          <span className="text-muted-foreground/60">Arpan Agrawal</span>
+          <span className="text-muted-foreground/60">arpan agrawal</span>
         </p>
       </div>
     </div>

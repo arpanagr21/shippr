@@ -29,10 +29,13 @@ router.get('/:uuid', async (req: AuthRequest, res: Response) => {
     const entries = deployment.logEntries.map((e) => ({ text: e.output, type: e.type }));
 
     res.json({
-      lines:  entries.slice(offset),
-      status: deployment.status,
-      done:   TERMINAL.has(deployment.status),
-      total:  entries.length,
+      lines:       entries.slice(offset),
+      status:      deployment.status,
+      done:        TERMINAL.has(deployment.status),
+      total:       entries.length,
+      started_at:  deployment.startedAt  ?? null,
+      finished_at: deployment.finishedAt ?? null,
+      created_at:  deployment.createdAt,
     });
   } catch {
     res.status(500).json({ error: 'Failed to fetch logs' });

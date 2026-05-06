@@ -10,7 +10,6 @@ import { runSeed }    from './db/seed';
 import { syncRegistry } from './sync';
 import appsRouter        from './routes/apps';
 import servicesRouter    from './routes/services';
-import deploymentsRouter from './routes/deployments';
 import logsRouter        from './routes/logs';
 import authRouter        from './routes/auth';
 import adminRouter       from './routes/admin';
@@ -87,7 +86,6 @@ app.use('/api/admin',       adminRouter);
 app.use('/api/projects',    projectsRouter);
 app.use('/api/apps',        appsRouter);
 app.use('/api/services',    servicesRouter);
-app.use('/api/deployments', deploymentsRouter);
 app.use('/api/logs',        logsRouter);
 
 if (process.env.NODE_ENV === 'production') {

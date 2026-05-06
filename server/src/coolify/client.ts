@@ -4,7 +4,7 @@
  * To add support for a new Coolify API version:
  *   1. Create server/src/coolify/vN.ts implementing CoolifyAdapter
  *   2. Add it to the `adapters` map below
- *   3. Set COOLIFY_API_VERSION=vN in .env
+ *   3. Set SHIPPR_COOLIFY_API_VERSION=vN in .env
  */
 
 import type { CoolifyAdapter } from './adapter';

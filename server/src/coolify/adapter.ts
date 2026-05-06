@@ -65,8 +65,8 @@ export interface CoolifyAdapter {
   getApplications(): Promise<NormalizedApp[]>;
   getServices():     Promise<NormalizedService[]>;
 
-  /** Full deployment history for one app, newest first. logEntries is always []. */
-  getApplicationDeployments(appUuid: string): Promise<NormalizedDeployment[]>;
+  /** One page of deployments for an app, newest first. logEntries is always []. */
+  getApplicationDeployments(appUuid: string, skip?: number, take?: number): Promise<{ deployments: NormalizedDeployment[]; hasMore: boolean }>;
 
   /** Single deployment with full logs, looked up within the app's deployment list. */
   getDeploymentWithLogs(appUuid: string, deploymentUuid: string): Promise<NormalizedDeployment>;

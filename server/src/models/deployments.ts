@@ -53,7 +53,7 @@ export async function setCachedDeployments(
         deploymentUuid: d.uuid,
         status:         d.status,
         commit:         d.commit         ?? null,
-        commitMessage:  d.commitMessage  ?? null,
+        commitMessage:  d.commitMessage?.slice(0, 191) ?? null,
         createdAt:      d.createdAt,
         startedAt:      d.startedAt,
         updatedAt:      d.updatedAt,
