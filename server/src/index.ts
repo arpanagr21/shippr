@@ -14,6 +14,7 @@ import logsRouter        from './routes/logs';
 import authRouter        from './routes/auth';
 import adminRouter       from './routes/admin';
 import projectsRouter    from './routes/projects';
+import containersRouter  from './routes/containers';
 
 initCache('memory');
 
@@ -50,10 +51,11 @@ function makeRateLimiter(windowMs: number, max: number) {
   };
 }
 
-// 300 req / 15 min per IP on all API routes
-app.use('/api', makeRateLimiter(15 * 60 * 1000, 300));
-// Tighter: 200 req / 1 min on log-polling (called every ~800 ms while a deployment is open)
-app.use('/api/logs', makeRateLimiter(60 * 1000, 200));
+// 2000 req / 15 min per IP on all API routes
+app.use('/api', makeRateLimiter(15 * 60 * 1000, 2000));
+// Log-polling: allow up to 2000 req / min
+app.use('/api/logs',       makeRateLimiter(60 * 1000, 2000));
+app.use('/api/containers', makeRateLimiter(60 * 1000, 2000));
 
 // Public config — Firebase web SDK settings served to the client at runtime
 app.get('/api/config', (_req, res) => {
@@ -87,6 +89,7 @@ app.use('/api/projects',    projectsRouter);
 app.use('/api/apps',        appsRouter);
 app.use('/api/services',    servicesRouter);
 app.use('/api/logs',        logsRouter);
+app.use('/api/containers',  containersRouter);
 
 if (process.env.NODE_ENV === 'production') {
   const clientDist = path.join(__dirname, '../client/dist');

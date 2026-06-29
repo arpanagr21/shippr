@@ -1,4 +1,4 @@
-import type { Application, Service, Deployment } from './types';
+import type { Application, Service, Deployment, DockerContainer } from './types';
 
 const BASE = (import.meta.env.VITE_API_URL as string | undefined) || '';
 
@@ -113,6 +113,31 @@ export interface LogPollResponse {
   finished_at: string | null;
   created_at:  string;
 }
+
+// --- Containers ---
+
+export interface ContainerListResponse {
+  containers: DockerContainer[];
+}
+
+export const getContainers = () => get<ContainerListResponse>('/api/containers');
+
+export interface ContainerLogLine {
+  text: string;
+  type?: 'stdout' | 'stderr';
+}
+
+export interface ContainerLogPollResponse {
+  lines:     ContainerLogLine[];
+  running:   boolean;
+  nextSince: number;
+}
+
+export function pollContainerLogs(id: string, since: number): Promise<ContainerLogPollResponse> {
+  return get<ContainerLogPollResponse>(`/api/containers/${id}/logs?since=${since}`);
+}
+
+// --- Log polling ---
 
 export function pollLogs(
   deploymentUuid: string,

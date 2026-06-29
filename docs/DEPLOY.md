@@ -63,8 +63,8 @@ The browser fetches these at runtime from `/api/config` — no rebuild required 
 In your Coolify instance: **Settings → API Tokens → Create token**
 
 ```
-COOLIFY_URL=https://coolify.your-domain.com
-COOLIFY_TOKEN=your_token_here
+SHIPPR_COOLIFY_URL=https://coolify.your-domain.com
+SHIPPR_COOLIFY_TOKEN=your_token_here
 ```
 
 ---
@@ -73,8 +73,8 @@ COOLIFY_TOKEN=your_token_here
 
 ```env
 # ── Coolify ──────────────────────────────────────────────────────────────────
-COOLIFY_URL=https://coolify.your-domain.com
-COOLIFY_TOKEN=your_coolify_api_token
+SHIPPR_COOLIFY_URL=https://coolify.your-domain.com
+SHIPPR_COOLIFY_TOKEN=your_coolify_api_token
 
 # ── Firebase Admin SDK (server-side) ─────────────────────────────────────────
 FIREBASE_PROJECT_ID=your-project-id
@@ -245,8 +245,8 @@ No build args required — Firebase config is runtime-only.
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `COOLIFY_URL` | Yes | — | Base URL of your Coolify instance |
-| `COOLIFY_TOKEN` | Yes | — | Coolify API token |
+| `SHIPPR_COOLIFY_URL` | Yes | — | Base URL of your Coolify instance |
+| `SHIPPR_COOLIFY_TOKEN` | Yes | — | Coolify API token |
 | `FIREBASE_PROJECT_ID` | Yes | — | Firebase project ID (shared by server + client) |
 | `FIREBASE_CLIENT_EMAIL` | Yes | — | Firebase Admin SDK service account email |
 | `FIREBASE_PRIVATE_KEY` | Yes | — | Firebase Admin SDK private key (full PEM block) |

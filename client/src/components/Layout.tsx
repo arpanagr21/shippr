@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ChevronRight, Users, LogOut } from 'lucide-react';
+import { LayoutDashboard, ChevronRight, Users, LogOut, Server } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -69,6 +69,7 @@ export default function Layout({ children, crumbs, navRight, fullHeight }: Props
             Navigation
           </p>
           <NavItem to="/" icon={LayoutDashboard} label="Dashboard" exact />
+          <NavItem to="/containers" icon={Server} label="Containers" />
           {isAdmin && (
             <NavItem to="/users" icon={Users} label="Users" />
           )}

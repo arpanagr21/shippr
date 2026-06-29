@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Rocket, ScrollText, Box, Layers, ExternalLink, Clock, ChevronRight } from 'lucide-react';
+import { Rocket, ScrollText, Box, Layers, ExternalLink, Clock, ChevronRight, Server } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -151,7 +151,7 @@ export default function AppCard({ resource }: { resource: Resource }) {
 
       <Separator />
 
-      <CardFooter className="gap-2 pt-3 pb-3">
+      <CardFooter className="gap-2 pt-3 pb-3 flex-wrap">
         {isApp && (
           <Button
             variant="outline"
@@ -170,6 +170,22 @@ export default function AppCard({ resource }: { resource: Resource }) {
             {latestDeployment ? 'View Logs' : 'Deployments'}
           </Button>
         )}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 w-8 p-0 shrink-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/containers?q=${encodeURIComponent(resource.name)}`);
+              }}
+            >
+              <Server className="h-3.5 w-3.5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Container logs</TooltipContent>
+        </Tooltip>
         <Button
           size="sm"
           className="flex-1 h-8 gap-1.5 text-xs"

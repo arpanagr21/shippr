@@ -128,7 +128,7 @@ Do not run destructive schema changes — additive-only (add models/fields, neve
 2. Register in server/src/coolify/client.ts:
    adapters['vN'] = () => new VNAdapter();
 
-3. Set COOLIFY_API_VERSION=vN in .env
+3. Set SHIPPR_COOLIFY_API_VERSION=vN in .env
 
 4. Update docs/ARCHITECTURE.md "Coolify adapter pattern" section
 ```

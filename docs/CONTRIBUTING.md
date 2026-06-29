@@ -69,7 +69,7 @@ server/src/
 
 1. Create `server/src/coolify/vN.ts` implementing `CoolifyAdapter` from `./adapter`
 2. Add it to the `adapters` map in `server/src/coolify/client.ts`
-3. Set `COOLIFY_API_VERSION=vN` in `.env`
+3. Set `SHIPPR_COOLIFY_API_VERSION=vN` in `.env`
 
 Raw API response types (snake_case, version-specific) stay private inside `vN.ts`. The normalised types in `adapter.ts` are the stable contract everything else depends on.
 
@@ -145,7 +145,7 @@ Every PR description must end with a **Docs impact** section. The maintainer upd
 - .env.example: <new/changed vars, or "none">
 ```
 
-Be specific. "Added `COOLIFY_API_VERSION` env var, default `v1`" is useful. "Updated docs" is not.
+Be specific. "Added `SHIPPR_COOLIFY_API_VERSION` env var, default `v1`" is useful. "Updated docs" is not.
 
 ---
 

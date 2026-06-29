@@ -279,7 +279,7 @@ All registry tables have `deleted_at` (soft delete) and `synced_at` (last seen i
 
 The Coolify API is the biggest external dependency. A few rules that protect us when Coolify releases new versions:
 
-- **`COOLIFY_API_VERSION`** is a config var (default `v1`). If Coolify ships `/api/v2`, operators can switch without a code change.
+- **`SHIPPR_COOLIFY_API_VERSION`** is a config var (default `v1`). If Coolify ships `/api/v2`, operators can switch without a code change.
 - All fields on Coolify response types in `coolify/types.ts` that are not guaranteed to be present use `?`. The `parseLogEntries` function returns `[]` on any parse failure. This means new Coolify versions that add or rename fields degrade gracefully (missing data, not crashes).
 - `started_at` on `CoolifyDeployment` is declared optional and falls back to `created_at`. If Coolify adds a real `started_at` field in a future version, the normaliser picks it up automatically.
 
@@ -324,7 +324,7 @@ coolify/
 **Adding a new Coolify API version:**
 1. Create `coolify/vN.ts` implementing `CoolifyAdapter`
 2. Register it in `client.ts`'s `adapters` map
-3. Set `COOLIFY_API_VERSION=vN` in `.env`
+3. Set `SHIPPR_COOLIFY_API_VERSION=vN` in `.env`
 
 Nothing else changes. `sync.ts`, `routes/`, and `models/` depend only on `CoolifyAdapter` and the normalised types — not on any version-specific shapes.
 
@@ -373,7 +373,7 @@ Nothing else changes. `sync.ts`, `routes/`, and `models/` depend only on `Coolif
         │   └── index.ts    ← initCache() / getCache() entry point
         ├── coolify/
         │   ├── adapter.ts  ← CoolifyAdapter interface + normalised types
-        │   ├── client.ts   ← factory (picks adapter by COOLIFY_API_VERSION)
+        │   ├── client.ts   ← factory (picks adapter by SHIPPR_COOLIFY_API_VERSION)
         │   └── v1.ts       ← Coolify v1 implementation
         ├── db/
         │   ├── index.ts    ← Prisma client singleton

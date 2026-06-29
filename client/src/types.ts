@@ -27,3 +27,16 @@ export interface Service {
 }
 
 export type Resource = Application | Service;
+
+export interface DockerContainer {
+  id:             string;
+  name:           string;
+  image:          string;
+  status:         string;
+  state:          string;
+  created:        number;
+  composeProject: string | null;
+  composeService: string | null;
+  coolifyAppId:   string | null;
+  coolifyType:    string | null;
+}

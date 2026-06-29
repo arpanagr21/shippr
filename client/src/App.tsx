@@ -7,6 +7,8 @@ import Dashboard      from './pages/Dashboard';
 import AppDeployments from './pages/AppDeployments';
 import DeploymentView from './pages/DeploymentView';
 import UserManagement from './pages/UserManagement';
+import Containers     from './pages/Containers';
+import ContainerView  from './pages/ContainerView';
 
 export default function App() {
   return (
@@ -25,6 +27,12 @@ export default function App() {
           } />
           <Route path="/users" element={
             <ProtectedRoute><UserManagement /></ProtectedRoute>
+          } />
+          <Route path="/containers" element={
+            <ProtectedRoute><Containers /></ProtectedRoute>
+          } />
+          <Route path="/containers/:id" element={
+            <ProtectedRoute><ContainerView /></ProtectedRoute>
           } />
         </Routes>
       </TooltipProvider>

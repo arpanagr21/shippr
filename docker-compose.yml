@@ -11,6 +11,7 @@ services:
       - ./.env:/app/.env:ro
       - server_modules:/app/node_modules
       - ./server/data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - NODE_ENV=development
       - PORT=3069

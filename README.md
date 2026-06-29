@@ -103,8 +103,8 @@ See [docs/DEPLOY.md](docs/DEPLOY.md) for step-by-step Firebase setup and all con
 
 | Variable | Required | Description |
 |---|---|---|
-| `COOLIFY_URL` | Yes | Base URL of your Coolify instance |
-| `COOLIFY_TOKEN` | Yes | Coolify API token |
+| `SHIPPR_COOLIFY_URL` | Yes | Base URL of your Coolify instance |
+| `SHIPPR_COOLIFY_TOKEN` | Yes | Coolify API token |
 | `PORT` | No | Port to listen on (default `3069`) |
 | `FIREBASE_PROJECT_ID` | Yes | Firebase project ID |
 | `FIREBASE_CLIENT_EMAIL` | Yes | Firebase Admin SDK service account email |
